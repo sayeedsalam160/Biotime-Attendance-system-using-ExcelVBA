@@ -1,20 +1,20 @@
-\# Changelog
+# Changelog
 
 
 
-\## Day 1
+## Day 1
 
-\- GitHub repository created
+- GitHub repository created
 
-\- Folder structure created
+- Folder structure created
 
 
 
-\## Day 2
+## Day 2
 
-\- ACS File Selection Module started
+- ACS File Selection Module started
 
-\## Day 3
+## Day 3
 
 Added:
 - ACS data import engine implemented
