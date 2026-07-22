@@ -1,4 +1,4 @@
-\# Day 2 - ACS File Selection
+# Day 2 - ACS File Selection
 
 
 
