@@ -3,6 +3,11 @@ Option Explicit
 
 Public Sub GenerateAttendance()
 
-    MsgBox "Attendance Engine Started!", vbInformation
+    If Not SelectACSFile Then Exit Sub
+
+    MsgBox "Selected File:" & vbCrLf & _
+           gACSFilePath, _
+           vbInformation, _
+           "Attendance Engine"
 
 End Sub
