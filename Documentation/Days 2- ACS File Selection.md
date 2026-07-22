@@ -16,5 +16,5 @@ Store selected file path in a global variable.
 
 Status:
 
-Pending
+Completed
 
