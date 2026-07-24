@@ -1,10 +1,12 @@
 Attribute VB_Name = "modMain"
-Option Explicit
-
 Public Sub GenerateAttendance()
 
     If Not SelectACSFile Then Exit Sub
 
     ImportACSData
+
+    Call BuildHeaderMap
+
+    If Not ValidateHeaders Then Exit Sub
 
 End Sub

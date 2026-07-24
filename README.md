@@ -28,7 +28,8 @@ Biotime-Attendance-system-using-ExcelVBA
 
 - [x] GitHub Repository Setup
 - [x] Project Folder Structure
-- [ ] ACS File Selection
+- [x] ACS File Selection
+- [ ] Header Mapping Engine
 - [ ] Data Import Engine
 - [ ] Attendance Processing
 - [ ] Night Shift Logic
