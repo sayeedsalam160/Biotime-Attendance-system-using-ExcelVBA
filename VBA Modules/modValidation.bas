@@ -30,3 +30,25 @@ Public Function ValidateHeaders() As Boolean
     ValidateHeaders = True
 
 End Function
+
+Public Function IsValidEmployeeID(ByVal EmpID As Variant) As Boolean
+
+    If Trim(EmpID & "") = "" Then
+        IsValidEmployeeID = False
+    Else
+        IsValidEmployeeID = True
+    End If
+
+End Function
+
+Public Function IsValidDateField(ByVal Value As Variant) As Boolean
+
+    IsValidDateField = IsDate(Value)
+
+End Function
+
+Public Function IsValidTimeField(ByVal Value As Variant) As Boolean
+
+    IsValidTimeField = IsDate(Value)
+
+End Function

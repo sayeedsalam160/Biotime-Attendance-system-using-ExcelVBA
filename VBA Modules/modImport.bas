@@ -48,6 +48,9 @@ Public Sub ImportACSData()
 
     LastRow = wsACS.Cells(wsACS.Rows.Count, "A").End(xlUp).Row
     LastCol = wsACS.Cells(2, wsACS.Columns.Count).End(xlToLeft).Column
+    
+    gLastRow = LastRow - 1
+    gLastColumn = LastCol
 
     wsRaw.Cells.Clear
 
