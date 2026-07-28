@@ -8,5 +8,7 @@ Public Sub GenerateAttendance()
     Call BuildHeaderMap
 
     If Not ValidateHeaders Then Exit Sub
+    
+    Call ProcessMorningShift
 
 End Sub
