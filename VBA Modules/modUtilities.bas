@@ -1,6 +1,4 @@
 Attribute VB_Name = "modUtilities"
-Option Explicit
-
 Public Sub BuildHeaderMap()
 
     Dim ws As Worksheet
@@ -28,4 +26,27 @@ Public Sub BuildHeaderMap()
 
     Next Col
 
+
 End Sub
+
+Public Function GetAttendanceDate( _
+    ByVal PunchDate As Date, _
+    ByVal PunchTime As Date) As Date
+
+    Dim TimeOnly As Date
+
+    TimeOnly = TimeValue(PunchTime)
+
+    '12:00 AM to 2:59:59 AM
+    If TimeOnly < TimeSerial(3, 0, 0) Then
+
+        GetAttendanceDate = PunchDate - 1
+
+    Else
+
+        GetAttendanceDate = PunchDate
+
+    End If
+
+End Function
+

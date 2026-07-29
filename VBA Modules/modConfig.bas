@@ -8,3 +8,5 @@ Public gACSData As Variant
 Public gHeaderMap As Object
 Public gLastRow As Long
 Public gLastColumn As Long
+
+Public gMorningShiftDict As Object
