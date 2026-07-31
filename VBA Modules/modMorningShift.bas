@@ -12,119 +12,167 @@ Public Sub ProcessMorningShift()
     Dim PunchTime As Date
     Dim AttendanceDate As Date
     Dim DictKey As String
-
-    Dim PunchData As Variant
-    Dim Key As Variant
-    Dim Counter As Long
     Dim FullDateTime As Date
-    Dim TestKey As Variant
 
-    Set ws = ThisWorkbook.Worksheets("Raw Import")
+    Dim PunchCollection As Collection
+
+    Set ws = ThisWorkbook.Worksheets("Raw Punch Database")
 
     LastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
 
     Set gMorningShiftDict = CreateObject("Scripting.Dictionary")
 
-    For RowNum = DATA_START_ROW To LastRow
+    For RowNum = 2 To LastRow
 
         EmployeeID = Trim(ws.Cells(RowNum, gHeaderMap("Employee ID")).Value)
 
         PunchDate = ws.Cells(RowNum, gHeaderMap("Date")).Value
 
         PunchTime = ws.Cells(RowNum, gHeaderMap("Time")).Value
-        
+
         FullDateTime = PunchDate + TimeValue(PunchTime)
 
         AttendanceDate = GetAttendanceDate(PunchDate, PunchTime)
 
         DictKey = EmployeeID & "|" & Format(AttendanceDate, "dd-mm-yyyy")
-        
-        If PunchTime < TimeSerial(12, 0, 0) Then
-
-            Debug.Print EmployeeID & _
-                " | " & PunchDate & _
-                " | " & PunchTime & _
-                " | Attendance=" & AttendanceDate
-
-        End If
-
-        'Debug first 10 records only
-        If RowNum <= 10 Then
-
-            Debug.Print "PunchDate      = " & PunchDate
-            Debug.Print "PunchTime      = " & PunchTime
-            Debug.Print "AttendanceDate = " & AttendanceDate
-            Debug.Print "DictKey        = " & DictKey
-            Debug.Print "-------------------------"
-
-        End If
 
         If Not gMorningShiftDict.Exists(DictKey) Then
-        
-            gMorningShiftDict.Add DictKey, Array(FullDateTime, FullDateTime)
-        
+
+            Set PunchCollection = New Collection
+
+            PunchCollection.Add FullDateTime
+
+            gMorningShiftDict.Add DictKey, PunchCollection
+
         Else
-        
-            PunchData = gMorningShiftDict(DictKey)
-        
-            If FullDateTime < PunchData(0) Then
-                PunchData(0) = FullDateTime
-            End If
-        
-            If FullDateTime > PunchData(1) Then
-                PunchData(1) = FullDateTime
-            End If
-        
-            gMorningShiftDict(DictKey) = PunchData
-        
+
+            gMorningShiftDict(DictKey).Add FullDateTime
+
         End If
 
     Next RowNum
 
-    Debug.Print "Last Row = " & LastRow
-    Debug.Print "Dictionary Count = " & gMorningShiftDict.Count
-    
+    Debug.Print "Morning Dictionary Count = " & gMorningShiftDict.Count
 
-For Each TestKey In gMorningShiftDict.Keys
+End Sub
 
-    If InStr(TestKey, "30008") > 0 Then
+Public Sub WriteMorningShiftDatabase()
 
-        PunchData = gMorningShiftDict(TestKey)
+    Dim wsDB As Worksheet
+    Dim DBRow As Long
 
-        Debug.Print "FOUND: " & TestKey
-        Debug.Print "First = " & PunchData(0)
-        Debug.Print "Last  = " & PunchData(1)
-        Debug.Print "--------------------"
+    Dim DictKey As Variant
+    Dim PunchCollection As Collection
+    Dim PunchItem As Variant
 
-    End If
+    Dim EmployeeID As String
+    Dim AttendanceDate As Date
 
-Next TestKey
-    Debug.Print "=============================="
+    Dim PunchIn As Variant
+    Dim PunchOut As Variant
 
-    Counter = 0
+    Dim FoundIn As Boolean
+    Dim FoundOut As Boolean
 
-    For Each Key In gMorningShiftDict.Keys
+    Dim TotalHours As Double
+    Dim Status As String
 
-        PunchData = gMorningShiftDict(Key)
+    Dim Parts() As String
 
-        Debug.Print Key & _
-            " | First=" & Format(PunchData(0), "dd-mm-yyyy hh:mm:ss AM/PM") & _
-            " | Last=" & Format(PunchData(1), "dd-mm-yyyy hh:mm:ss AM/PM")
+    Set wsDB = ThisWorkbook.Worksheets("Morning Shift Database")
 
-        Counter = Counter + 1
+    For Each DictKey In gMorningShiftDict.Keys
 
-        If Counter >= 10 Then Exit For
+        Set PunchCollection = gMorningShiftDict(DictKey)
 
-    Next Key
+        FoundIn = False
+        FoundOut = False
 
-    MsgBox gMorningShiftDict.Count & _
-           " unique Employee-Date combinations found.", vbInformation
+        Parts = Split(DictKey, "|")
+
+        EmployeeID = Parts(0)
+        AttendanceDate = CDate(Parts(1))
+
+        For Each PunchItem In PunchCollection
+
+            If IsMorningIn(PunchItem) Then
+
+                If Not FoundIn Then
+
+                    PunchIn = PunchItem
+                    FoundIn = True
+
+                ElseIf PunchItem < PunchIn Then
+
+                    PunchIn = PunchItem
+
+                End If
+
+            End If
+
+            If IsMorningOut(PunchItem) Then
+
+                If Not FoundOut Then
+
+                    PunchOut = PunchItem
+                    FoundOut = True
+
+                ElseIf PunchItem > PunchOut Then
+
+                    PunchOut = PunchItem
+
+                End If
+
+            End If
+
+        Next PunchItem
+
+        If FoundIn And FoundOut Then
+
+            TotalHours = CalculateHours(PunchIn, PunchOut)
+
+            Status = "Present"
+
+        Else
+
+            TotalHours = 0
+
+            Status = "UNK"
+
+        End If
+
+        If Not RecordExists(EmployeeID, AttendanceDate, _
+                            "Morning Shift Database") Then
+
+            DBRow = GetNextRow("Morning Shift Database")
+
+            wsDB.Cells(DBRow, 1).Value = AttendanceDate
+            wsDB.Cells(DBRow, 2).Value = EmployeeID
+
+            If FoundIn Then
+                wsDB.Cells(DBRow, 4).Value = PunchIn
+            End If
+
+            If FoundOut Then
+                wsDB.Cells(DBRow, 5).Value = PunchOut
+            End If
+
+            wsDB.Cells(DBRow, 6).Value = TotalHours
+            wsDB.Cells(DBRow, 7).Value = "Morning"
+            wsDB.Cells(DBRow, 8).Value = Status
+
+        End If
+
+    Next DictKey
+
+    MsgBox "Morning Shift Database Updated", vbInformation
 
 End Sub
 
 Public Function IsMorningIn(ByVal PunchTime As Date) As Boolean
 
     Dim T As Date
+
     T = TimeValue(PunchTime)
 
     IsMorningIn = (T >= TimeValue("14:00:00") And _
@@ -135,6 +183,7 @@ End Function
 Public Function IsMorningOut(ByVal PunchTime As Date) As Boolean
 
     Dim T As Date
+
     T = TimeValue(PunchTime)
 
     IsMorningOut = _

@@ -10,3 +10,4 @@ Public gLastRow As Long
 Public gLastColumn As Long
 
 Public gMorningShiftDict As Object
+Public gNightShiftDict As Object

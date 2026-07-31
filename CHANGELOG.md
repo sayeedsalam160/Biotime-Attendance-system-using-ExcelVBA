@@ -126,3 +126,29 @@ Results:
 
 ## Status
 Completed
+
+# Day 9
+
+## Added
+- Permanent Raw Punch Database for historical attendance storage
+- Duplicate punch validation before database insertion
+- Night Shift dictionary generation
+- Night Shift attendance processing engine
+- Automatic rebuilding of Morning and Night attendance databases
+- Night Shift hour calculation
+- Attendance status generation (Present / UNK)
+
+## Improved
+- Morning Shift engine now reads from Raw Punch Database
+- Attendance processing rebuilt from historical punches instead of latest import
+- Time handling updated to support both Date and Numeric Excel time values
+
+## Fixed
+- Duplicate punch imports
+- Night Shift dictionary not detecting numeric time values
+- Attendance rebuilding consistency across multiple ACS imports
+
+## Architecture
+- Adopted historical attendance database approach
+- Identified midnight overlap between Morning Punch Out and Night Punch In
+- Planned migration to a session-based attendance engine in Day 10
