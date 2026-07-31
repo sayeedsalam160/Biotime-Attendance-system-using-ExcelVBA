@@ -16,10 +16,12 @@ Public Sub GenerateAttendance()
     ClearAttendanceDatabase "Morning Shift Database"
     ClearAttendanceDatabase "Night Shift Database"
 
-    ProcessMorningShift
-    WriteMorningShiftDatabase
+    'ProcessMorningShift
+    'WriteMorningShiftDatabase
 
-    ProcessNightShift
-    WriteNightShiftDatabase
+    'ProcessNightShift
+    'WriteNightShiftDatabase
+    
+    ProcessAttendanceEngine
 
 End Sub
