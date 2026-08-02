@@ -288,12 +288,6 @@ Private Sub ProcessAllAttendanceSessions()
     SortAttendanceSheets
     FormatAttendanceSheets
 
-        MsgBox _
-            "Attendance processing completed successfully." & vbCrLf & _
-            "The Raw Punch Database and attendance records have been updated.", _
-            vbInformation, _
-            "Attendance Automation"
-
 End Sub
 
 '=========================================================

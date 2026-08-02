@@ -23,5 +23,13 @@ Public Sub GenerateAttendance()
     'WriteNightShiftDatabase
     
     ProcessAttendanceEngine
+    
+        UpdateTodaysSummary
+
+    MsgBox _
+        "Attendance processing completed successfully." & vbCrLf & _
+        "The attendance databases and management summary have been updated.", _
+        vbInformation, _
+        "Attendance Automation"
 
 End Sub
